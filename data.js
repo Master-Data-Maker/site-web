@@ -78,18 +78,32 @@ const Data = (() => {
     const txs = getTransactions().filter(t => t.id !== id);
     saveTransactions(txs);
   }
-   
+
   function updateTransaction(id, { type, description, amount, date, category }) {
-   const amount_num = parseFloat(amount);
-    if (!type || !description || isNaN(amount_num) || amount_num <= 0 || !date || !category)
+    if (!type || !description || !amount || !date || !category) {
       return { ok: false, error: 'Tous les champs sont requis.' };
+    }
+    const amount_num = parseFloat(amount);
+    if (isNaN(amount_num) || amount_num <= 0) {
+      return { ok: false, error: 'Le montant doit être un nombre positif.' };
+    }
     const txs = getTransactions();
     const idx = txs.findIndex(t => t.id === id);
     if (idx === -1) return { ok: false, error: 'Transaction introuvable.' };
-    txs[idx] = { ...txs[idx], type, description: description.trim(), amount: amount_num, date, category };
+
+    txs[idx] = {
+      ...txs[idx],
+      type,
+      description: description.trim(),
+      amount: amount_num,
+      date,
+      category,
+      updatedAt: new Date().toISOString()
+    };
     saveTransactions(txs);
     return { ok: true, tx: txs[idx] };
-}
+  }
+
   // ── Filtres ───────────────────────────────
   function filterTransactions({ type = '', category = '', month = '' } = {}) {
     let txs = getTransactions();
@@ -244,22 +258,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalTx   = document.getElementById('modalTx');
   const txError   = document.getElementById('txError');
   let currentType = 'income';
-  let editingId = null;
+  let editingId   = null;   // null = création, sinon id de la tx en cours d'édition
 
-  // Ouvrir la modale
-  document.getElementById('btnAddTx')?.addEventListener('click', () => {
-    // Date du jour par défaut
+  // Helper : ouvrir la modale en mode création
+  function openModalCreate() {
     editingId = null;
-    document.getElementById('txDesc').value = '';
+    document.getElementById('txDesc').value   = '';
     document.getElementById('txAmount').value = '';
-    document.getElementById('txDate').value = new Date().toISOString().slice(0, 10);
-    document.getElementById('txCat').value = 'salaire';
+    document.getElementById('txDate').value   = new Date().toISOString().slice(0, 10);
+    document.getElementById('txCat').value    = 'salaire';
     currentType = 'income';
     document.getElementById('typeIncome').classList.add('active');
     document.getElementById('typeExpense').classList.remove('active');
-    document.getElementById('modalTxTitle').textContent = 'Ajouter une transaction';
-    document.getElementById('submitTx').textContent = 'Enregistrer';
+    document.getElementById('modalTxTitle').textContent  = 'Ajouter une transaction';
+    document.getElementById('submitTx').textContent      = 'Enregistrer';
+    txError.classList.add('hidden');
     modalTx.classList.remove('hidden');
+  }
+
+  // Helper : ouvrir la modale en mode édition
+  function openModalEdit(tx) {
+    editingId = tx.id;
+    document.getElementById('txDesc').value   = tx.description;
+    document.getElementById('txAmount').value = tx.amount;
+    document.getElementById('txDate').value   = tx.date;
+    document.getElementById('txCat').value    = tx.category;
+    currentType = tx.type;
+    document.getElementById('typeIncome').classList.toggle('active',  tx.type === 'income');
+    document.getElementById('typeExpense').classList.toggle('active', tx.type === 'expense');
+    document.getElementById('modalTxTitle').textContent  = 'Modifier la transaction';
+    document.getElementById('submitTx').textContent      = 'Mettre à jour';
+    txError.classList.add('hidden');
+    modalTx.classList.remove('hidden');
+  }
+
+  // Exposer openModalEdit pour renderTransactions
+  window._openTxModalEdit = openModalEdit;
+
+  // Ouvrir la modale (bouton +Ajouter)
+  document.getElementById('btnAddTx')?.addEventListener('click', () => {
+    openModalCreate();
   });
 
   // Fermer la modale
@@ -282,27 +320,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('typeIncome').classList.remove('active');
   });
 
-  // Soumettre une transaction
+  // Soumettre une transaction (création ou modification)
   document.getElementById('submitTx')?.addEventListener('click', () => {
     txError.classList.add('hidden');
+
     const payload = {
-      type: currentType,
+      type:        currentType,
       description: document.getElementById('txDesc').value,
-      amount: document.getElementById('txAmount').value,
-      date: document.getElementById('txDate').value,
-      category: document.getElementById('txCat').value
-  };
-  const result = editingId ? Data.updateTransaction(editingId, payload) : Data.addTransaction(payload);
-  if (!result.ok) { txError.textContent = result.error; txError.classList.remove('hidden'); return; }
-  document.getElementById('txDesc').value = '';
-  document.getElementById('txAmount').value = '';
-  editingId = null;
-  modalTx.classList.add('hidden');
-  showToast(result.tx?.updatedAt ? 'Transaction modifiée ✓' : 'Transaction ajoutée ✓');
-  if (typeof window.renderTransactions === 'function') window.renderTransactions();
-  if (typeof window.updateDashboard === 'function') window.updateDashboard();
-});
-    });
+      amount:      document.getElementById('txAmount').value,
+      date:        document.getElementById('txDate').value,
+      category:    document.getElementById('txCat').value
+    };
+
+    let result;
+    if (editingId) {
+      result = Data.updateTransaction(editingId, payload);
+    } else {
+      result = Data.addTransaction(payload);
+    }
 
     if (!result.ok) {
       txError.textContent = result.error;
@@ -313,9 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset + ferme
     document.getElementById('txDesc').value   = '';
     document.getElementById('txAmount').value = '';
+    editingId = null;
     modalTx.classList.add('hidden');
 
-    showToast('Transaction ajoutée ✓');
+    showToast(editingId !== null ? 'Transaction modifiée ✓' : (result.tx ? 'Transaction ajoutée ✓' : 'Transaction mise à jour ✓'));
     if (typeof window.renderTransactions === 'function') window.renderTransactions();
     if (typeof window.updateDashboard    === 'function') window.updateDashboard();
   });
@@ -387,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     container.innerHTML = txs.map(tx => `
-      <div class="tx-item tx-editable" data-id="${tx.id}">
+      <div class="tx-item tx-item-editable" data-id="${tx.id}" title="Cliquer pour modifier" style="cursor:pointer">
         <div class="tx-icon">${Data.getCatIcon(tx.category)}</div>
         <div class="tx-info">
           <div class="tx-desc">${tx.description}</div>
@@ -396,14 +432,33 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="tx-amount ${tx.type}">
           ${tx.type === 'income' ? '+' : '−'}${Data.formatAmount(tx.amount)}
         </span>
-        <button class="tx-edit" data-id="${tx.id}">✏️</button>
+        <button class="tx-edit" data-id="${tx.id}" title="Modifier">✏️</button>
         <button class="tx-delete" data-id="${tx.id}" title="Supprimer">🗑</button>
       </div>
     `).join('');
 
+    // Édition au clic sur la ligne (sauf sur les boutons)
+    container.querySelectorAll('.tx-item-editable').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.tx-delete') || e.target.closest('.tx-edit')) return;
+        const tx = Data.getTransactions().find(t => t.id === row.dataset.id);
+        if (tx && typeof window._openTxModalEdit === 'function') window._openTxModalEdit(tx);
+      });
+    });
+
+    // Édition via bouton crayon
+    container.querySelectorAll('.tx-edit').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tx = Data.getTransactions().find(t => t.id === btn.dataset.id);
+        if (tx && typeof window._openTxModalEdit === 'function') window._openTxModalEdit(tx);
+      });
+    });
+
     // Suppression
     container.querySelectorAll('.tx-delete').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         Data.deleteTransaction(btn.dataset.id);
         showToast('Transaction supprimée.');
         if (typeof window.renderTransactions === 'function') window.renderTransactions();
@@ -411,29 +466,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   };
-
-container.querySelectorAll('.tx-editable').forEach(row => {
-  row.addEventListener('click', e => {
-    if (e.target.closest('.tx-delete, .tx-edit')) return;
-    const tx = Data.getTransactions().find(t => t.id === row.dataset.id);
-    if (!tx) return;
-    editingId = tx.id;
-    currentType = tx.type;
-    document.getElementById('txDesc').value = tx.description;
-    document.getElementById('txAmount').value = tx.amount;
-    document.getElementById('txDate').value = tx.date;
-    document.getElementById('txCat').value = tx.category;
-    document.getElementById('typeIncome').classList.toggle('active', tx.type === 'income');
-    document.getElementById('typeExpense').classList.toggle('active', tx.type === 'expense');
-    document.getElementById('modalTxTitle').textContent = 'Modifier la transaction';
-    document.getElementById('submitTx').textContent = 'Mettre à jour';
-    txError.classList.add('hidden');
-    modalTx.classList.remove('hidden');
-  });
-});
-container.querySelectorAll('.tx-edit').forEach(btn => {
-  btn.addEventListener('click', e => { e.stopPropagation(); btn.closest('.tx-editable').click(); });
-});
 
   // ════════ RENDER TRANSACTIONS RÉCENTES (dashboard) ════════
 
