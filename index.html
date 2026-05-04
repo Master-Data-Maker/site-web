@@ -410,6 +410,36 @@
   </div>
 </div>
 
+<!-- Settings -->
+<div id="modalSettings" class="modal hidden">
+  <div class="modal-backdrop" id="closeSettings"></div>
+  <div class="modal-box" style="max-width: 480px;">
+    <button class="modal-close" id="closeSettingsBtn">✕</button>
+    <div class="modal-icon">⚙️</div>
+    <h2 class="modal-title">Mon profil</h2>
+
+    <!-- Avatar -->
+    <div class="settings-avatar-row">
+      <div class="settings-avatar-preview" id="settingsAvatarPreview"></div>
+      <div class="settings-avatar-options" id="settingsAvatarOptions"></div>
+    </div>
+
+    <!-- Pseudo -->
+    <div class="form-group">
+      <label>Pseudo affiché</label>
+      <input type="text" id="settingsName" class="input-field" placeholder="Votre prénom / pseudo" />
+    </div>
+
+    <!-- Badge métier -->
+    <div class="form-group">
+      <label>Statut / Métier</label>
+      <div class="badge-grid" id="badgeGrid"></div>
+    </div>
+
+    <button class="btn-primary btn-full mt-8" id="submitSettings">Sauvegarder</button>
+  </div>
+</div>
+  
 <!-- Toast -->
 <div id="toast" class="toast hidden"></div>
 
