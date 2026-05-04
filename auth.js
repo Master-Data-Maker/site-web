@@ -205,9 +205,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const link = document.querySelector(`.nav-link[data-page="${pageId}"]`);
     if (link) link.classList.add('active');
 
-    // Met à jour les stats si on est sur le dashboard
-    if (pageId === 'dashboard' && typeof updateDashboard === 'function') {
-      updateDashboard();
+    // Rafraîchit le contenu de chaque page à la visite
+    switch (pageId) {
+      case 'dashboard':
+        if (typeof updateDashboard === 'function') updateDashboard();
+        setTimeout(() => { if (typeof drawCharts === 'function') drawCharts(); }, 80);
+        break;
+      case 'transactions':
+        // Remet les filtres à zéro
+        ['filterType','filterCat','filterMonth'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        if (typeof renderTransactions === 'function') renderTransactions();
+        break;
+      case 'budget':
+        if (typeof renderBudgets === 'function') renderBudgets();
+        break;
     }
   }
 
