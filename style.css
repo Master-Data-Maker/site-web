@@ -564,14 +564,23 @@ body {
 .tx-delete:hover { color: var(--accent-red); }
 
 .tx-edit {
-  background: none; border: none; color: var(--text-muted);
-  cursor: pointer; font-size: 0.9rem; padding: 4px;
-  border-radius: 4px; transition: color 0.15s; opacity: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+  opacity: 0;
 }
 .tx-item:hover .tx-edit { opacity: 1; }
 .tx-edit:hover { color: var(--accent-teal); }
-.tx-editable { cursor: pointer; }
-.tx-editable:hover { background: rgba(0,212,170,0.04); border-radius: var(--radius); }
+
+.tx-item-editable:hover {
+  background: rgba(0,212,170,0.04);
+  border-radius: var(--radius);
+}
 
 .empty-state {
   text-align: center;
