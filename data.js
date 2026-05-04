@@ -78,7 +78,18 @@ const Data = (() => {
     const txs = getTransactions().filter(t => t.id !== id);
     saveTransactions(txs);
   }
-
+   
+  function updateTransaction(id, { type, description, amount, date, category }) {
+   const amount_num = parseFloat(amount);
+    if (!type || !description || isNaN(amount_num) || amount_num <= 0 || !date || !category)
+      return { ok: false, error: 'Tous les champs sont requis.' };
+    const txs = getTransactions();
+    const idx = txs.findIndex(t => t.id === id);
+    if (idx === -1) return { ok: false, error: 'Transaction introuvable.' };
+    txs[idx] = { ...txs[idx], type, description: description.trim(), amount: amount_num, date, category };
+    saveTransactions(txs);
+    return { ok: true, tx: txs[idx] };
+}
   // ── Filtres ───────────────────────────────
   function filterTransactions({ type = '', category = '', month = '' } = {}) {
     let txs = getTransactions();
@@ -204,6 +215,7 @@ const Data = (() => {
     getTransactions,
     addTransaction,
     deleteTransaction,
+    updateTransaction,
     filterTransactions,
     getMonthStats,
     getTotalBalance,
@@ -232,11 +244,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalTx   = document.getElementById('modalTx');
   const txError   = document.getElementById('txError');
   let currentType = 'income';
+  let editingId = null;
 
   // Ouvrir la modale
   document.getElementById('btnAddTx')?.addEventListener('click', () => {
     // Date du jour par défaut
+    editingId = null;
+    document.getElementById('txDesc').value = '';
+    document.getElementById('txAmount').value = '';
     document.getElementById('txDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('txCat').value = 'salaire';
+    currentType = 'income';
+    document.getElementById('typeIncome').classList.add('active');
+    document.getElementById('typeExpense').classList.remove('active');
+    document.getElementById('modalTxTitle').textContent = 'Ajouter une transaction';
+    document.getElementById('submitTx').textContent = 'Enregistrer';
     modalTx.classList.remove('hidden');
   });
 
@@ -263,13 +285,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // Soumettre une transaction
   document.getElementById('submitTx')?.addEventListener('click', () => {
     txError.classList.add('hidden');
-
-    const result = Data.addTransaction({
-      type:        currentType,
+    const payload = {
+      type: currentType,
       description: document.getElementById('txDesc').value,
-      amount:      document.getElementById('txAmount').value,
-      date:        document.getElementById('txDate').value,
-      category:    document.getElementById('txCat').value
+      amount: document.getElementById('txAmount').value,
+      date: document.getElementById('txDate').value,
+      category: document.getElementById('txCat').value
+  };
+  const result = editingId ? Data.updateTransaction(editingId, payload) : Data.addTransaction(payload);
+  if (!result.ok) { txError.textContent = result.error; txError.classList.remove('hidden'); return; }
+  document.getElementById('txDesc').value = '';
+  document.getElementById('txAmount').value = '';
+  editingId = null;
+  modalTx.classList.add('hidden');
+  showToast(result.tx?.updatedAt ? 'Transaction modifiée ✓' : 'Transaction ajoutée ✓');
+  if (typeof window.renderTransactions === 'function') window.renderTransactions();
+  if (typeof window.updateDashboard === 'function') window.updateDashboard();
+});
     });
 
     if (!result.ok) {
