@@ -52,12 +52,12 @@
   <div class="hero-visual">
     <div class="mock-card">
       <div class="mock-label">Solde disponible</div>
-      <div class="mock-amount">2 847,50 €</div>
+      <div class="mock-amount">156779845321218,01 €</div>
       <div class="mock-bar-wrap">
         <div class="mock-bar" style="width:65%"></div>
       </div>
-      <div class="mock-row"><span class="mock-green">↑ Revenus</span><span>+3 200 €</span></div>
-      <div class="mock-row"><span class="mock-red">↓ Dépenses</span><span>−352,50 €</span></div>
+      <div class="mock-row"><span class="mock-green">↑ Revenus</span><span>+500 000 €</span></div>
+      <div class="mock-row"><span class="mock-red">↓ Dépenses</span><span>−20,50 €</span></div>
     </div>
   </div>
 </section>
@@ -70,7 +70,7 @@
     <div class="page-header">
       <div>
         <h2 class="page-title">Tableau de bord</h2>
-        <p class="page-sub" id="dashGreeting">Bonjour !</p>
+        <p class="page-sub" id="dashGreeting">Bienvenue !</p>
       </div>
       <div class="date-chip" id="currentDate"></div>
     </div>
@@ -87,14 +87,14 @@
       <div class="kpi-card kpi-income">
         <div class="kpi-icon">↑</div>
         <div class="kpi-info">
-          <span class="kpi-label">Revenus du mois</span>
+          <span class="kpi-label">Revenus ce mois-ci</span>
           <span class="kpi-value" id="kpiIncome">0,00 €</span>
         </div>
       </div>
       <div class="kpi-card kpi-expense">
         <div class="kpi-icon">↓</div>
         <div class="kpi-info">
-          <span class="kpi-label">Dépenses du mois</span>
+          <span class="kpi-label">Dépenses ce mois-ci</span>
           <span class="kpi-value" id="kpiExpense">0,00 €</span>
         </div>
       </div>
@@ -110,11 +110,11 @@
     <!-- CHARTS ROW -->
     <div class="charts-row">
       <div class="card chart-card">
-        <h3 class="card-title">Flux financier (6 mois)</h3>
+        <h3 class="card-title">Flux financier (sur le 6 derniers mois)</h3>
         <canvas id="flowChart" width="600" height="220"></canvas>
       </div>
       <div class="card chart-card chart-small">
-        <h3 class="card-title">Répartition dépenses</h3>
+        <h3 class="card-title">Répartition des dépenses</h3>
         <canvas id="donutChart" width="220" height="220"></canvas>
         <div id="donutLegend" class="donut-legend"></div>
       </div>
@@ -129,8 +129,8 @@
       </div>
       <div class="card ia-card">
         <div class="ia-header">
-          <span class="ia-badge">🤖 IA</span>
-          <h3 class="card-title">Conseil du jour</h3>
+          <span class="ia-badge">IA en besoin ;)</span>
+          <h3 class="card-title">Le conseil du jour !</h3>
         </div>
         <div id="iaTip" class="ia-tip">Analysez vos données pour obtenir des conseils personnalisés.</div>
         <button class="btn-primary btn-sm mt-8" id="btnAnalyze">Analyser mes finances</button>
@@ -179,7 +179,7 @@
     <div class="page-header">
       <div>
         <h2 class="page-title">Prévisions IA</h2>
-        <p class="page-sub">Projection intelligente de vos finances</p>
+        <p class="page-sub">Projection de vos finances</p>
       </div>
     </div>
 
@@ -188,27 +188,27 @@
       <p class="card-desc">Renseignez vos informations financières pour obtenir une analyse précise.</p>
       <div class="ia-form-grid">
         <div class="form-group">
-          <label>Revenu mensuel net (€)</label>
+          <label>Revenu mensuel net (en €)</label>
           <input type="number" id="iaRevenu" placeholder="ex: 2500" class="input-field" />
         </div>
         <div class="form-group">
-          <label>Loyer / Crédit immobilier (€)</label>
+          <label>Loyer / Crédit immobilier (en €)</label>
           <input type="number" id="iaLoyer" placeholder="ex: 800" class="input-field" />
         </div>
         <div class="form-group">
-          <label>Charges fixes mensuelles (€)</label>
+          <label>Charges fixes mensuelles (en €)</label>
           <input type="number" id="iaCharges" placeholder="ex: 200" class="input-field" />
         </div>
         <div class="form-group">
-          <label>Budget alimentation (€)</label>
+          <label>Budget alimentation (en €)</label>
           <input type="number" id="iaAlim" placeholder="ex: 400" class="input-field" />
         </div>
         <div class="form-group">
-          <label>Objectif d'épargne mensuel (€)</label>
+          <label>Objectif d'épargne mensuel (en €)</label>
           <input type="number" id="iaObjectif" placeholder="ex: 300" class="input-field" />
         </div>
         <div class="form-group">
-          <label>Autres dépenses estimées (€)</label>
+          <label>Autres dépenses estimées (en €)</label>
           <input type="number" id="iaAutres" placeholder="ex: 150" class="input-field" />
         </div>
       </div>
@@ -234,14 +234,14 @@
         <div class="kpi-card kpi-expense">
           <div class="kpi-icon">📉</div>
           <div class="kpi-info">
-            <span class="kpi-label">Total dépenses fixes</span>
+            <span class="kpi-label">Total des dépenses fixes</span>
             <span class="kpi-value" id="prevDepenses">—</span>
           </div>
         </div>
         <div class="kpi-card kpi-saving">
           <div class="kpi-icon">🎯</div>
           <div class="kpi-info">
-            <span class="kpi-label">Ratio épargne</span>
+            <span class="kpi-label">Ratio d'épargne</span>
             <span class="kpi-value" id="prevRatio">—</span>
           </div>
         </div>
@@ -267,9 +267,9 @@
     <div class="page-header">
       <div>
         <h2 class="page-title">Budget</h2>
-        <p class="page-sub">Définissez et suivez vos enveloppes budgétaires</p>
+        <p class="page-sub">Définissez et suivez votre budget</p>
       </div>
-      <button class="btn-primary" id="btnAddBudget">+ Nouvelle enveloppe</button>
+      <button class="btn-primary" id="btnAddBudget">+ Nouvelle enveloppe budgétaire</button>
     </div>
     <div id="budgetList" class="budget-grid"></div>
     <div class="card mt-16" id="budgetEmpty">
@@ -298,7 +298,7 @@
     </div>
     <div id="loginError" class="form-error hidden"></div>
     <button class="btn-primary btn-full mt-8" id="submitLogin">Se connecter</button>
-    <p class="modal-switch">Pas encore de compte ? <a href="#" id="switchToRegister">Créer un compte</a></p>
+    <p class="modal-switch">Vous n'avez pas encore de compte chez nous ? Mmmh... <a href="#" id="switchToRegister">Créez votre compte dès maintenant !</a></p>
   </div>
 </div>
 
@@ -327,7 +327,7 @@
     </div>
     <div id="regError" class="form-error hidden"></div>
     <button class="btn-primary btn-full mt-8" id="submitRegister">Créer mon compte</button>
-    <p class="modal-switch">Déjà un compte ? <a href="#" id="switchToLogin">Se connecter</a></p>
+    <p class="modal-switch">Vous avez déjà un compte ? Okay...<a href="#" id="switchToLogin">Connectez-vous ici</a></p>
   </div>
 </div>
 
