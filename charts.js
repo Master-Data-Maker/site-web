@@ -12,11 +12,14 @@ window.drawCharts = function () {
 function drawFlowChart() {
   const canvas = document.getElementById('flowChart');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
 
+  //réinitialisation forcée
+  canvas.width = 0;
+  canvas.height = 0;
+  canvas.removeAttribute('style');
+   
   // Adapter la taille au conteneur
-  canvas.style.width = '100%';
-  canvas.style.height = 'auto';
+  const ctx = canvas.getContext('2d');
   const parent = canvas.parentElement;
   canvas.width  = parent.clientWidth  || 600;
   canvas.height = 220;
