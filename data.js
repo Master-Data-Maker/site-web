@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     container.innerHTML = txs.map(tx => `
-      <div class="tx-item">
+      <div class="tx-item tx-editable" data-id="${tx.id}">
         <div class="tx-icon">${Data.getCatIcon(tx.category)}</div>
         <div class="tx-info">
           <div class="tx-desc">${tx.description}</div>
@@ -396,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="tx-amount ${tx.type}">
           ${tx.type === 'income' ? '+' : '−'}${Data.formatAmount(tx.amount)}
         </span>
+        <button class="tx-edit" data-id="${tx.id}">✏️</button>
         <button class="tx-delete" data-id="${tx.id}" title="Supprimer">🗑</button>
       </div>
     `).join('');
@@ -410,6 +411,29 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   };
+
+container.querySelectorAll('.tx-editable').forEach(row => {
+  row.addEventListener('click', e => {
+    if (e.target.closest('.tx-delete, .tx-edit')) return;
+    const tx = Data.getTransactions().find(t => t.id === row.dataset.id);
+    if (!tx) return;
+    editingId = tx.id;
+    currentType = tx.type;
+    document.getElementById('txDesc').value = tx.description;
+    document.getElementById('txAmount').value = tx.amount;
+    document.getElementById('txDate').value = tx.date;
+    document.getElementById('txCat').value = tx.category;
+    document.getElementById('typeIncome').classList.toggle('active', tx.type === 'income');
+    document.getElementById('typeExpense').classList.toggle('active', tx.type === 'expense');
+    document.getElementById('modalTxTitle').textContent = 'Modifier la transaction';
+    document.getElementById('submitTx').textContent = 'Mettre à jour';
+    txError.classList.add('hidden');
+    modalTx.classList.remove('hidden');
+  });
+});
+container.querySelectorAll('.tx-edit').forEach(btn => {
+  btn.addEventListener('click', e => { e.stopPropagation(); btn.closest('.tx-editable').click(); });
+});
 
   // ════════ RENDER TRANSACTIONS RÉCENTES (dashboard) ════════
 
