@@ -284,8 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
     modalTx.classList.add('hidden');
 
     showToast('Transaction ajoutée ✓');
-    renderTransactions();
-    updateDashboard();
+    if (typeof window.renderTransactions === 'function') window.renderTransactions();
+    if (typeof window.updateDashboard    === 'function') window.updateDashboard();
   });
 
   // ════════ MODAL BUDGET ════════
@@ -319,20 +319,22 @@ document.addEventListener('DOMContentLoaded', () => {
     modalBudget.classList.add('hidden');
 
     showToast('Enveloppe créée ✓');
-    renderBudgets();
+    if (typeof window.renderBudgets === 'function') window.renderBudgets();
   });
 
   // ════════ FILTRES TRANSACTIONS ════════
 
   ['filterType', 'filterCat', 'filterMonth'].forEach(id => {
-    document.getElementById(id)?.addEventListener('change', renderTransactions);
+    document.getElementById(id)?.addEventListener('change', () => {
+      if (typeof window.renderTransactions === 'function') window.renderTransactions();
+    });
   });
 
   document.getElementById('btnClearFilter')?.addEventListener('click', () => {
     document.getElementById('filterType').value  = '';
     document.getElementById('filterCat').value   = '';
     document.getElementById('filterMonth').value = '';
-    renderTransactions();
+    if (typeof window.renderTransactions === 'function') window.renderTransactions();
   });
 
   // ════════ RENDER TRANSACTIONS (page Transactions) ════════
@@ -371,8 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         Data.deleteTransaction(btn.dataset.id);
         showToast('Transaction supprimée.');
-        renderTransactions();
-        updateDashboard();
+        if (typeof window.renderTransactions === 'function') window.renderTransactions();
+        if (typeof window.updateDashboard    === 'function') window.updateDashboard();
       });
     });
   };
@@ -451,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         Data.deleteBudget(btn.dataset.id);
         showToast('Enveloppe supprimée.');
-        renderBudgets();
+        if (typeof window.renderBudgets === 'function') window.renderBudgets();
       });
     });
   };
