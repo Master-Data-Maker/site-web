@@ -15,6 +15,8 @@ function drawFlowChart() {
   const ctx = canvas.getContext('2d');
 
   // Adapter la taille au conteneur
+  canvas.style.width = '100%';
+  canvas.style.height = 'auto';
   const parent = canvas.parentElement;
   canvas.width  = parent.clientWidth  || 600;
   canvas.height = 220;
@@ -166,6 +168,8 @@ window.drawProjChart = function (monthlyData) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
+  canvas.style.width = '100%';
+  canvas.style.height = 'auto';
   const parent = canvas.parentElement;
   canvas.width  = parent.clientWidth || 700;
   canvas.height = 260;
