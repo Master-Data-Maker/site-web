@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowMoney — Gestion Financière</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>" />
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Flow<span>Money</span></a>
+    <ul class="nav-links">
+      <li><a href="#dashboard" class="nav-link" data-page="dashboard">Tableau de bord</a></li>
+      <li><a href="#transactions" class="nav-link" data-page="transactions">Transactions</a></li>
+      <li><a href="#previsions" class="nav-link" data-page="previsions">Prévisions IA</a></li>
+      <li><a href="#budget" class="nav-link" data-page="budget">Budget</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <button class="btn-ghost" id="btnLogin">Connexion</button>
+      <button class="btn-primary" id="btnRegister">Créer un compte</button>
+    </div>
+    <div class="nav-user hidden" id="navUser">
+      <div class="user-avatar" id="userAvatar"></div>
+      <span class="user-name" id="userName"></span>
+      <button class="btn-ghost btn-sm" id="btnLogout">Déconnexion</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO (non connecté) ═══════════════ -->
+<section id="heroSection" class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ Gestion intelligente</div>
+    <h1 class="hero-title">Maîtrisez votre<br/><span class="gradient-text">argent au quotidien</span></h1>
+    <p class="hero-sub">Suivez vos revenus, anticipez vos dépenses et laissez notre algorithme vous guider vers vos objectifs financiers.</p>
+    <div class="hero-cta">
+      <button class="btn-primary btn-lg" id="heroRegister">Commencer gratuitement</button>
+      <button class="btn-outline btn-lg" id="heroLogin">Se connecter</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-pill">📊 Analyse en temps réel</div>
+      <div class="stat-pill">🔒 Données privées</div>
+      <div class="stat-pill">🤖 IA intégrée</div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="mock-card">
+      <div class="mock-label">Solde disponible</div>
+      <div class="mock-amount">2 847,50 €</div>
+      <div class="mock-bar-wrap">
+        <div class="mock-bar" style="width:65%"></div>
+      </div>
+      <div class="mock-row"><span class="mock-green">↑ Revenus</span><span>+3 200 €</span></div>
+      <div class="mock-row"><span class="mock-red">↓ Dépenses</span><span>−352,50 €</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ APP (connecté) ═══════════════ -->
+<main id="appMain" class="app hidden">
+
+  <!-- DASHBOARD PAGE -->
+  <div id="pageDashboard" class="page active">
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Tableau de bord</h2>
+        <p class="page-sub" id="dashGreeting">Bonjour !</p>
+      </div>
+      <div class="date-chip" id="currentDate"></div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-balance">
+        <div class="kpi-icon">💳</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Solde disponible</span>
+          <span class="kpi-value" id="kpiBalance">0,00 €</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-income">
+        <div class="kpi-icon">↑</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Revenus du mois</span>
+          <span class="kpi-value" id="kpiIncome">0,00 €</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-expense">
+        <div class="kpi-icon">↓</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Dépenses du mois</span>
+          <span class="kpi-value" id="kpiExpense">0,00 €</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-saving">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Taux d'épargne</span>
+          <span class="kpi-value" id="kpiSaving">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+      <div class="card chart-card">
+        <h3 class="card-title">Flux financier (6 mois)</h3>
+        <canvas id="flowChart" width="600" height="220"></canvas>
+      </div>
+      <div class="card chart-card chart-small">
+        <h3 class="card-title">Répartition dépenses</h3>
+        <canvas id="donutChart" width="220" height="220"></canvas>
+        <div id="donutLegend" class="donut-legend"></div>
+      </div>
+    </div>
+
+    <!-- RECENT TX + IA TIP -->
+    <div class="bottom-row">
+      <div class="card">
+        <h3 class="card-title">Dernières transactions</h3>
+        <div id="recentTx" class="tx-list"></div>
+        <a href="#transactions" class="card-link" data-page="transactions">Voir tout →</a>
+      </div>
+      <div class="card ia-card">
+        <div class="ia-header">
+          <span class="ia-badge">🤖 IA</span>
+          <h3 class="card-title">Conseil du jour</h3>
+        </div>
+        <div id="iaTip" class="ia-tip">Analysez vos données pour obtenir des conseils personnalisés.</div>
+        <button class="btn-primary btn-sm mt-8" id="btnAnalyze">Analyser mes finances</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS PAGE -->
+  <div id="pageTransactions" class="page">
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Transactions</h2>
+        <p class="page-sub">Gérez vos revenus et dépenses</p>
+      </div>
+      <button class="btn-primary" id="btnAddTx">+ Ajouter</button>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filter-bar">
+      <select id="filterType" class="input-sm">
+        <option value="">Tous les types</option>
+        <option value="income">Revenus</option>
+        <option value="expense">Dépenses</option>
+      </select>
+      <select id="filterCat" class="input-sm">
+        <option value="">Toutes catégories</option>
+        <option value="salaire">Salaire</option>
+        <option value="alimentation">Alimentation</option>
+        <option value="logement">Logement</option>
+        <option value="transport">Transport</option>
+        <option value="loisirs">Loisirs</option>
+        <option value="sante">Santé</option>
+        <option value="autre">Autre</option>
+      </select>
+      <input type="month" id="filterMonth" class="input-sm" />
+      <button class="btn-ghost btn-sm" id="btnClearFilter">✕ Effacer</button>
+    </div>
+
+    <div class="card">
+      <div id="txList" class="tx-list-full"></div>
+    </div>
+  </div>
+
+  <!-- PRÉVISIONS PAGE -->
+  <div id="pagePrevisions" class="page">
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Prévisions IA</h2>
+        <p class="page-sub">Projection intelligente de vos finances</p>
+      </div>
+    </div>
+
+    <div class="ia-input-section card">
+      <h3 class="card-title">📥 Fournir vos données à l'algorithme</h3>
+      <p class="card-desc">Renseignez vos informations financières pour obtenir une analyse précise.</p>
+      <div class="ia-form-grid">
+        <div class="form-group">
+          <label>Revenu mensuel net (€)</label>
+          <input type="number" id="iaRevenu" placeholder="ex: 2500" class="input-field" />
+        </div>
+        <div class="form-group">
+          <label>Loyer / Crédit immobilier (€)</label>
+          <input type="number" id="iaLoyer" placeholder="ex: 800" class="input-field" />
+        </div>
+        <div class="form-group">
+          <label>Charges fixes mensuelles (€)</label>
+          <input type="number" id="iaCharges" placeholder="ex: 200" class="input-field" />
+        </div>
+        <div class="form-group">
+          <label>Budget alimentation (€)</label>
+          <input type="number" id="iaAlim" placeholder="ex: 400" class="input-field" />
+        </div>
+        <div class="form-group">
+          <label>Objectif d'épargne mensuel (€)</label>
+          <input type="number" id="iaObjectif" placeholder="ex: 300" class="input-field" />
+        </div>
+        <div class="form-group">
+          <label>Autres dépenses estimées (€)</label>
+          <input type="number" id="iaAutres" placeholder="ex: 150" class="input-field" />
+        </div>
+      </div>
+      <button class="btn-primary mt-8" id="btnLaunchIA">🤖 Lancer l'analyse IA</button>
+    </div>
+
+    <div id="iaResults" class="hidden">
+      <div class="kpi-grid mt-16">
+        <div class="kpi-card kpi-balance">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-info">
+            <span class="kpi-label">Solde prévisionnel</span>
+            <span class="kpi-value" id="prevSolde">—</span>
+          </div>
+        </div>
+        <div class="kpi-card kpi-income">
+          <div class="kpi-icon">📈</div>
+          <div class="kpi-info">
+            <span class="kpi-label">Capacité d'épargne</span>
+            <span class="kpi-value" id="prevEpargne">—</span>
+          </div>
+        </div>
+        <div class="kpi-card kpi-expense">
+          <div class="kpi-icon">📉</div>
+          <div class="kpi-info">
+            <span class="kpi-label">Total dépenses fixes</span>
+            <span class="kpi-value" id="prevDepenses">—</span>
+          </div>
+        </div>
+        <div class="kpi-card kpi-saving">
+          <div class="kpi-icon">🎯</div>
+          <div class="kpi-info">
+            <span class="kpi-label">Ratio épargne</span>
+            <span class="kpi-value" id="prevRatio">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-16">
+        <h3 class="card-title">📊 Projection sur 12 mois</h3>
+        <canvas id="projChart" width="700" height="260"></canvas>
+      </div>
+
+      <div class="card ia-results-card mt-16">
+        <div class="ia-header">
+          <span class="ia-badge">🤖 Analyse IA</span>
+          <h3 class="card-title">Recommandations personnalisées</h3>
+        </div>
+        <div id="iaRecommandations" class="ia-recomm"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUDGET PAGE -->
+  <div id="pageBudget" class="page">
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Budget</h2>
+        <p class="page-sub">Définissez et suivez vos enveloppes budgétaires</p>
+      </div>
+      <button class="btn-primary" id="btnAddBudget">+ Nouvelle enveloppe</button>
+    </div>
+    <div id="budgetList" class="budget-grid"></div>
+    <div class="card mt-16" id="budgetEmpty">
+      <p class="empty-state">Aucune enveloppe budgétaire. Créez-en une pour commencer !</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════ MODALES ═══════════════ -->
+
+<!-- Login -->
+<div id="modalLogin" class="modal hidden">
+  <div class="modal-backdrop" id="closeLogin"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="closeLoginBtn">✕</button>
+    <div class="modal-icon">🔑</div>
+    <h2 class="modal-title">Connexion</h2>
+    <div class="form-group">
+      <label>Identifiant</label>
+      <input type="text" id="loginUsername" class="input-field" placeholder="Votre identifiant" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPassword" class="input-field" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <div id="loginError" class="form-error hidden"></div>
+    <button class="btn-primary btn-full mt-8" id="submitLogin">Se connecter</button>
+    <p class="modal-switch">Pas encore de compte ? <a href="#" id="switchToRegister">Créer un compte</a></p>
+  </div>
+</div>
+
+<!-- Register -->
+<div id="modalRegister" class="modal hidden">
+  <div class="modal-backdrop" id="closeRegister"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="closeRegisterBtn">✕</button>
+    <div class="modal-icon">✨</div>
+    <h2 class="modal-title">Créer un compte</h2>
+    <div class="form-group">
+      <label>Prénom / Pseudo</label>
+      <input type="text" id="regName" class="input-field" placeholder="Votre prénom" />
+    </div>
+    <div class="form-group">
+      <label>Identifiant unique</label>
+      <input type="text" id="regUsername" class="input-field" placeholder="ex: jean.dupont" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="regPassword" class="input-field" placeholder="Min. 8 caractères" autocomplete="new-password" />
+    </div>
+    <div class="form-group">
+      <label>Confirmer le mot de passe</label>
+      <input type="password" id="regPassword2" class="input-field" placeholder="Répétez le mot de passe" autocomplete="new-password" />
+    </div>
+    <div id="regError" class="form-error hidden"></div>
+    <button class="btn-primary btn-full mt-8" id="submitRegister">Créer mon compte</button>
+    <p class="modal-switch">Déjà un compte ? <a href="#" id="switchToLogin">Se connecter</a></p>
+  </div>
+</div>
+
+<!-- Add Transaction -->
+<div id="modalTx" class="modal hidden">
+  <div class="modal-backdrop" id="closeTx"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="closeTxBtn">✕</button>
+    <div class="modal-icon">💸</div>
+    <h2 class="modal-title">Ajouter une transaction</h2>
+    <div class="tx-type-toggle">
+      <button class="toggle-btn active" data-type="income" id="typeIncome">↑ Revenu</button>
+      <button class="toggle-btn" data-type="expense" id="typeExpense">↓ Dépense</button>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="txDesc" class="input-field" placeholder="ex: Salaire, Courses..." />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Montant (€)</label>
+        <input type="number" id="txAmount" class="input-field" placeholder="0.00" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="txDate" class="input-field" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Catégorie</label>
+      <select id="txCat" class="input-field">
+        <option value="salaire">💼 Salaire</option>
+        <option value="alimentation">🛒 Alimentation</option>
+        <option value="logement">🏠 Logement</option>
+        <option value="transport">🚗 Transport</option>
+        <option value="loisirs">🎮 Loisirs</option>
+        <option value="sante">💊 Santé</option>
+        <option value="autre">📦 Autre</option>
+      </select>
+    </div>
+    <div id="txError" class="form-error hidden"></div>
+    <button class="btn-primary btn-full mt-8" id="submitTx">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Add Budget Envelope -->
+<div id="modalBudget" class="modal hidden">
+  <div class="modal-backdrop" id="closeBudget"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="closeBudgetBtn">✕</button>
+    <div class="modal-icon">📁</div>
+    <h2 class="modal-title">Nouvelle enveloppe</h2>
+    <div class="form-group">
+      <label>Nom de l'enveloppe</label>
+      <input type="text" id="budgetName" class="input-field" placeholder="ex: Alimentation" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Montant alloué (€)</label>
+        <input type="number" id="budgetAmount" class="input-field" placeholder="0.00" />
+      </div>
+      <div class="form-group">
+        <label>Catégorie liée</label>
+        <select id="budgetCat" class="input-field">
+          <option value="alimentation">Alimentation</option>
+          <option value="logement">Logement</option>
+          <option value="transport">Transport</option>
+          <option value="loisirs">Loisirs</option>
+          <option value="sante">Santé</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-primary btn-full mt-8" id="submitBudget">Créer</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/ia.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
