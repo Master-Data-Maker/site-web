@@ -464,7 +464,7 @@ body {
 /* ═══════════ CHARTS ROW ═══════════ */
 .charts-row {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr 380px;
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -477,6 +477,8 @@ body {
   flex-direction: column;
   gap: 6px;
   margin-top: 12px;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .legend-item {
@@ -485,6 +487,7 @@ body {
   gap: 8px;
   font-size: 0.8rem;
   color: var(--text-secondary);
+  flex-wrap: wrap;
 }
 
 .legend-dot {
