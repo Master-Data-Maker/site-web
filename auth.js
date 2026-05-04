@@ -209,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
     switch (pageId) {
       case 'dashboard':
         if (typeof updateDashboard === 'function') updateDashboard();
-        setTimeout(() => { if (typeof drawCharts === 'function') drawCharts(); }, 80);
         break;
       case 'transactions':
         // Remet les filtres à zéro
