@@ -392,7 +392,7 @@ body {
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 20px 24px;
+  padding: 20px 28px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -499,7 +499,7 @@ body {
 /* ═══════════ BOTTOM ROW ═══════════ */
 .bottom-row {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 400px;
   gap: 16px;
 }
 
@@ -593,7 +593,14 @@ body {
 .input-sm:focus { outline: none; border-color: var(--accent-teal); }
 
 /* ═══════════ IA CARD ═══════════ */
-.ia-card { position: relative; overflow: hidden; }
+.ia-card { 
+  position: relative; 
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+}
 .ia-card::before {
   content: '';
   position: absolute;
