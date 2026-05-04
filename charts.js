@@ -19,10 +19,10 @@ function drawFlowChart() {
   canvas.removeAttribute('style');
    
   // Adapter la taille au conteneur
-  const ctx = canvas.getContext('2d');
   const parent = canvas.parentElement;
   canvas.width  = parent.clientWidth  || 600;
   canvas.height = 220;
+  const ctx = canvas.getContext('2d');
 
   const data   = Data.getFlowByMonths(6);
   const W      = canvas.width;
